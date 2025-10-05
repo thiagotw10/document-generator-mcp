@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Generated documents (opcional - você decide)
+generated_documents/
+
+# NPM
+*.tgz
+package-lock.json
+
+# Temporary files
+*.tmp
+.npm/
+.npx/

@@ -1,0 +1,36 @@
+{
+  "name": "document-generator-mcp",
+  "version": "1.0.6",
+  "description": "MCP Server para gerar documentos Word e PDF a partir de requisições de agentes IA",
+  "main": "build/index.js",
+  "bin": {
+    "document-generator-mcp": "build/index.js"
+  },
+  "scripts": {
+    "start": "node build/index.js",
+    "build": "tsc && node fix-shebang.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["mcp", "document", "generator", "word", "pdf", "claude", "ai"],
+  "author": "Thiago Oliveira",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thiagotw10/document-generator-mcp.git"
+  },
+  "homepage": "https://github.com/thiagotw10/document-generator-mcp#readme",
+  "files": ["build/**/*", "README.md", "package.json"],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.19.1",
+    "docx": "^8.5.0",
+    "pdfkit": "^0.17.2",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.19.19",
+    "@types/pdfkit": "^0.17.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

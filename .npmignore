@@ -1,0 +1,12 @@
+src/
+node_modules/
+*.log
+.DS_Store
+tsconfig.json
+test-prompts.md
+mcp-wrapper.js
+cli.js
+cli-advanced.js
+standalone-generator.js
+generate-doc.sh
+claude-config-example.json
