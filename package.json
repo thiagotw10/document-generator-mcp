@@ -1,6 +1,6 @@
 {
   "name": "document-generator-mcp",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "MCP Server para gerar documentos Word e PDF a partir de requisições de agentes IA",
   "main": "build/index.js",
   "bin": {

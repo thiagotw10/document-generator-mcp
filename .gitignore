@@ -27,3 +27,7 @@ package-lock.json
 *.tmp
 .npm/
 .npx/
+
+# Test files
+test-*.js
+test_*.js
