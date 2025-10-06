@@ -236,7 +236,7 @@ MIT License - see LICENSE file for details.
 
 ## 📊 Changelog
 
-### v1.0.7 (Latest)
+### v1.0.8 (Latest)
 - ✅ Professional syntax highlighting in PDF (VS Code Dark theme)
 - ✅ 100% responsive formatting (respects A4 margins)
 - ✅ Smart pagination (no content cuts)
