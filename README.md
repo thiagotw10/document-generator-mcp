@@ -243,11 +243,6 @@ MIT License - see LICENSE file for details.
 - ✅ Improved spacing after code blocks
 - ✅ Visual parity between Word and PDF
 
-### v1.0.6
-- ✅ Initial release
-- ✅ Word and PDF generation
-- ✅ Basic markdown support
-- ✅ Automatic formatting
 
 ---
 
