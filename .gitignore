@@ -31,3 +31,8 @@ package-lock.json
 # Test files
 test-*.js
 test_*.js
+ROADMAP.md
+PROGRESS.md
+TODO.md
+CHANGELOG.md
+ARCHITECTURE.md
