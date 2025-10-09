@@ -6,6 +6,7 @@ An MCP (Model Context Protocol) server to generate professional Word (.docx) and
 
 - ✅ Generate Word documents (.docx)
 - ✅ Generate PDF documents
+- ✅ **Auto-detect JSON blocks** (no backticks needed!) 🆕
 - ✅ Professional syntax highlighting (VS Code Dark theme)
 - ✅ Smart pagination (no content cuts between pages)
 - ✅ 100% responsive formatting (respects A4 margins)
@@ -123,6 +124,22 @@ async function example() {
 ```
 ````
 
+### Auto-Detected JSON (New in v1.0.9!)
+JSON objects and arrays are automatically detected and formatted as code blocks:
+
+```
+{
+  "status": "success",
+  "data": {
+    "users": [
+      {"id": 1, "name": "John"}
+    ]
+  }
+}
+```
+
+No need for ``` backticks! Just paste your JSON and it will be automatically formatted with syntax highlighting.
+
 **Syntax Highlighting Colors (VS Code Dark theme):**
 - 🟣 Keywords: `async`, `function`, `const`, `await`, etc. (#C586C0)
 - 🟠 Strings: `"text"`, `'text'` (#CE9178)
@@ -236,7 +253,18 @@ MIT License - see LICENSE file for details.
 
 ## 📊 Changelog
 
-### v1.0.7 (Latest)
+### v1.0.9 (Latest)
+- ✅ **Auto-detect JSON blocks** - No need for ``` backticks around JSON
+- ✅ Automatically formats JSON objects and arrays as code blocks
+- ✅ Validates JSON syntax before formatting
+- ✅ Applies syntax highlighting to detected JSON
+- ✅ Works in both Word and PDF documents
+
+### v1.0.8
+- ✅ English documentation for international audience
+- ✅ Improved README structure
+
+### v1.0.7
 - ✅ Professional syntax highlighting in PDF (VS Code Dark theme)
 - ✅ 100% responsive formatting (respects A4 margins)
 - ✅ Smart pagination (no content cuts)
