@@ -31,6 +31,16 @@ export function processMarkdownToWord(content: string): any[] {
             continue;
         }
         
+        // Detectar JSON/objeto solto
+        if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+            const jsonResult = detectAndProcessJSON(lines, i);
+            if (jsonResult) {
+                elements.push(...jsonResult.paragraphs);
+                i = jsonResult.nextIndex;
+                continue;
+            }
+        }
+        
         // Headings
         if (trimmed.startsWith('#### ')) {
             elements.push(new Paragraph({
@@ -366,6 +376,98 @@ function processNumberedList(lines: string[], startIndex: number): { paragraphs:
         }));
         i++;
     }
+    
+    return { paragraphs, nextIndex: i };
+}
+
+function detectAndProcessJSON(lines: string[], startIndex: number): { paragraphs: Paragraph[], nextIndex: number } | null {
+    const firstLine = lines[startIndex].trim();
+    if (!firstLine.startsWith('{') && !firstLine.startsWith('[')) return null;
+    
+    const jsonLines: string[] = [];
+    let i = startIndex;
+    let braceCount = 0;
+    let bracketCount = 0;
+    
+    // Contar chaves/colchetes para detectar fim do JSON
+    while (i < lines.length) {
+        const line = lines[i];
+        jsonLines.push(line);
+        
+        for (const char of line) {
+            if (char === '{') braceCount++;
+            if (char === '}') braceCount--;
+            if (char === '[') bracketCount++;
+            if (char === ']') bracketCount--;
+        }
+        
+        i++;
+        
+        // Se fechou todas as chaves/colchetes, terminou o JSON
+        if (braceCount === 0 && bracketCount === 0 && jsonLines.length > 0) {
+            break;
+        }
+        
+        // Limite de segurança
+        if (i - startIndex > 100) break;
+    }
+    
+    // Tentar validar se é JSON válido
+    try {
+        JSON.parse(jsonLines.join('\n'));
+    } catch {
+        return null; // Não é JSON válido, não processar como código
+    }
+    
+    // Processar como bloco de código JSON
+    const paragraphs: Paragraph[] = [];
+    
+    // Cabeçalho
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({ 
+            text: `▶ JSON`,
+            font: 'Consolas',
+            size: 18,
+            bold: true,
+            color: '4EC9B0'
+        })],
+        shading: { fill: '1E1E1E' },
+        spacing: { before: 240, after: 0 },
+        border: {
+            top: { color: '3E3E42', space: 1, style: 'single', size: 6 },
+            left: { color: '3E3E42', space: 1, style: 'single', size: 6 },
+            right: { color: '3E3E42', space: 1, style: 'single', size: 6 }
+        },
+        keepNext: true
+    }));
+    
+    // Conteúdo
+    jsonLines.forEach((line, index) => {
+        paragraphs.push(new Paragraph({
+            children: applySyntaxHighlighting(line, 'json'),
+            shading: { fill: '1E1E1E' },
+            spacing: { before: 0, after: 0, line: 276 },
+            indent: { left: 360, right: 360 },
+            border: {
+                left: { color: '3E3E42', space: 1, style: 'single', size: 6 },
+                right: { color: '3E3E42', space: 1, style: 'single', size: 6 }
+            },
+            keepNext: index < jsonLines.length - 1,
+            keepLines: true
+        }));
+    });
+    
+    // Rodapé
+    paragraphs.push(new Paragraph({
+        text: '',
+        shading: { fill: '1E1E1E' },
+        spacing: { before: 0, after: 240 },
+        border: {
+            bottom: { color: '3E3E42', space: 1, style: 'single', size: 6 },
+            left: { color: '3E3E42', space: 1, style: 'single', size: 6 },
+            right: { color: '3E3E42', space: 1, style: 'single', size: 6 }
+        }
+    }));
     
     return { paragraphs, nextIndex: i };
 }

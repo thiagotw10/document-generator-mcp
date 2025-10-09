@@ -49,6 +49,15 @@ export async function generateAdvancedPDF(
                 i = result.nextIndex;
                 continue;
             }
+            
+            // Detectar JSON/objeto solto
+            if (line.startsWith('{') || line.startsWith('[')) {
+                const jsonResult = detectAndProcessJSONPDF(doc, lines, i);
+                if (jsonResult) {
+                    i = jsonResult.nextIndex;
+                    continue;
+                }
+            }
 
             // Headings
             if (line.startsWith('#### ')) {
@@ -257,6 +266,88 @@ function applySyntaxHighlightingPDF(doc: PDFKit.PDFDocument, line: string, langu
     } else {
         doc.text('', { width: maxWidth });
     }
+}
+
+function detectAndProcessJSONPDF(doc: PDFKit.PDFDocument, lines: string[], startIndex: number): { nextIndex: number } | null {
+    const firstLine = lines[startIndex].trim();
+    if (!firstLine.startsWith('{') && !firstLine.startsWith('[')) return null;
+    
+    const jsonLines: string[] = [];
+    let i = startIndex;
+    let braceCount = 0;
+    let bracketCount = 0;
+    
+    // Contar chaves/colchetes para detectar fim do JSON
+    while (i < lines.length) {
+        const line = lines[i];
+        jsonLines.push(line);
+        
+        for (const char of line) {
+            if (char === '{') braceCount++;
+            if (char === '}') braceCount--;
+            if (char === '[') bracketCount++;
+            if (char === ']') bracketCount--;
+        }
+        
+        i++;
+        
+        // Se fechou todas as chaves/colchetes, terminou o JSON
+        if (braceCount === 0 && bracketCount === 0 && jsonLines.length > 0) {
+            break;
+        }
+        
+        // Limite de segurança
+        if (i - startIndex > 100) break;
+    }
+    
+    // Tentar validar se é JSON válido
+    try {
+        JSON.parse(jsonLines.join('\n'));
+    } catch {
+        return null; // Não é JSON válido
+    }
+    
+    // Processar como bloco de código
+    const codeBlockWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+    const codeBlockX = doc.page.margins.left;
+    
+    // Calcula altura total
+    doc.fontSize(9).font('Courier');
+    let totalHeight = 30;
+    jsonLines.forEach(line => {
+        totalHeight += doc.heightOfString(line || ' ', { width: codeBlockWidth - 20 }) + 4;
+    });
+    
+    // Verifica espaço
+    if (doc.y + totalHeight > doc.page.height - doc.page.margins.bottom) {
+        doc.addPage();
+    }
+    
+    doc.moveDown(0.5);
+    
+    // Cabeçalho
+    doc.fontSize(9).font('Courier-Bold').fillColor('#4EC9B0');
+    doc.rect(codeBlockX, doc.y - 5, codeBlockWidth, 20).fill('#1E1E1E');
+    doc.fillColor('#4EC9B0').text(`▶ JSON`, codeBlockX + 10, doc.y - 2);
+    doc.moveDown(0.3);
+    
+    // Conteúdo
+    jsonLines.forEach(line => {
+        const startY = doc.y;
+        doc.fontSize(9).font('Courier');
+        const textHeight = doc.heightOfString(line || ' ', { width: codeBlockWidth - 20 });
+        doc.rect(codeBlockX, startY - 2, codeBlockWidth, textHeight + 4).fill('#1E1E1E');
+        doc.x = codeBlockX + 10;
+        doc.y = startY;
+        applySyntaxHighlightingPDF(doc, line || ' ', 'json', codeBlockWidth - 20);
+    });
+    
+    // Rodapé
+    doc.rect(codeBlockX, doc.y, codeBlockWidth, 8).fill('#1E1E1E');
+    doc.moveDown(1.5);
+    doc.fillColor('#000000');
+    
+    return { nextIndex: i };
 }
 
 function processInlineFormatting(doc: PDFKit.PDFDocument, text: string, fontSize: number, maxWidth: number): void {
